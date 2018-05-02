@@ -1,8 +1,19 @@
 from __future__ import print_function
 import os
 
-img_dir = '../sample_imgs/'
+cwd = os.path.dirname(__file__)
+img_dir = os.path.join(cwd, '../sample_imgs/')
 tmp_zip_pathname = os.path.join(img_dir,'tmp_imgs.zip')
+
+# http://stackoverflow.com/a/5032238
+def ensure_path_exists(path):
+    import errno
+
+    try:
+        os.makedirs(path)
+    except OSError as exception:
+        if exception.errno != errno.EEXIST:
+            raise
 
 def dl_img_zip():
     import requests
@@ -18,6 +29,8 @@ def dl_img_zip():
     r = requests.get(img_album_url, stream=True)
 
     fmt_file_size = '{:.2f}'.format(file_size/(1024*1024))
+
+    ensure_path_exists(img_dir)
 
     file_index = 0
     with open(tmp_zip_pathname, 'wb') as fd:
