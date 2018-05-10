@@ -1,4 +1,4 @@
-# README #
+# golfr (working title) #
 
 # Current pipeline
 * find grid points
