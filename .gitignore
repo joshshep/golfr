@@ -101,5 +101,6 @@ ENV/
 /site
 
 
+# this excludes __init__.py files?!
 # processing debug images
-_*
+#_*
