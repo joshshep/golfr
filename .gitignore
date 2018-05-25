@@ -99,8 +99,3 @@ ENV/
 
 # mkdocs documentation
 /site
-
-
-# this excludes __init__.py files?!
-# processing debug images
-#_*

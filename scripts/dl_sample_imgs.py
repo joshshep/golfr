@@ -2,9 +2,9 @@
 
 from __future__ import print_function
 import os
+from definitions import ROOT_DIR
 
-cwd = os.path.dirname(__file__)
-img_dir = os.path.join(cwd, '../sample_imgs/')
+img_dir = os.path.join(ROOT_DIR, 'sample_imgs/')
 tmp_zip_pathname = os.path.join(img_dir,'tmp_imgs.zip')
 
 # http://stackoverflow.com/a/5032238

@@ -2,16 +2,24 @@
 
 import sys
 import cv2
+import os
+from ...definitions import ROOT_DIR
 
-TEST_IMG_DIR = 'test_imgs'
-PIPE_OUTPUT_DIR = 'pipe_output'
+DEBUG_OUTPUT_DIR = os.path.join(ROOT_DIR, 'debug/inter_imgs')
+#TEST_IMG_DIR = os.path.join(ROOT_DIR, 'pipe_output')
 
-def imwrite(fname,img):
+def _imwrite(fname,nimg):
+    if not __debug__:
+        return
+
+    #TODO: is there a better way to have a static variable?
     try:
         imwrite.i += 1
     except AttributeError:
+        if __debug__:
+            ensure_path_exists(DEBUG_OUTPUT_DIR)
         imwrite.i = 0
-    complete_fname = PIPE_OUTPUT_DIR+'/_'+str(imwrite.i).zfill(2)+'_'+fname
+    complete_fname = os.path.join(DEBUG_OUTPUT_DIR, '_'+str(imwrite.i).zfill(2)+'_'+fname)
     print 'writing \''+complete_fname+'\'...'
     cv2.imwrite(complete_fname,img)
 
@@ -21,7 +29,6 @@ returns: a list of tuples (x,y) representing the points of the grid corners
 '''
 def find_grid_points(in_fname):
     import numpy as np
-
 
     img = cv2.imread(in_fname)
     imwrite("orig.jpg", img)
