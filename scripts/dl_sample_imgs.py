@@ -2,14 +2,16 @@
 
 from __future__ import print_function
 import os
-from definitions import ROOT_DIR
+import errno
+
+#from definitions import ROOT_DIR
+ROOT_DIR = '/home/josh/r/golfr'
 
 img_dir = os.path.join(ROOT_DIR, 'sample_imgs/')
 tmp_zip_pathname = os.path.join(img_dir,'tmp_imgs.zip')
 
 # http://stackoverflow.com/a/5032238
 def ensure_path_exists(path):
-    import errno
 
     try:
         os.makedirs(path)
@@ -23,24 +25,24 @@ def dl_img_zip():
     print('Downloading sample images zip...')
 
     img_album_url = 'http://imgur.com/a/SOIUE/zip'
-    chunk_size = 1024*1024
+    CHUNK_SIZE = 1024*1024
 
     r = requests.head(img_album_url)
     file_size = int(r.headers['content-length'])
 
     r = requests.get(img_album_url, stream=True)
 
-    fmt_file_size = '{:.2f}'.format(file_size/(1024*1024))
+    fmt_file_size = '{:.2f}'.format(file_size/CHUNK_SIZE)
 
     ensure_path_exists(img_dir)
 
     file_index = 0
     with open(tmp_zip_pathname, 'wb') as fd:
-        for chunk in r.iter_content(chunk_size):
-            fmt_file_index = '{:.2f}'.format(file_index/(1024*1024))
+        for chunk in r.iter_content(CHUNK_SIZE):
+            fmt_file_index = '{:.2f}'.format(file_index/CHUNK_SIZE)
             print(fmt_file_index+'/'+fmt_file_size+' MB', end='\r')
             fd.write(chunk)
-            file_index += chunk_size
+            file_index += CHUNK_SIZE
     print(fmt_file_size+'/'+fmt_file_size+' MB')
 
     print('done')
