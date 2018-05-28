@@ -1,3 +1,5 @@
 requests
 opencv-python
 numpy
+keras
+tensorflow
