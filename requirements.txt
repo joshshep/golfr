@@ -3,3 +3,5 @@ opencv-python
 numpy
 keras
 tensorflow
+#tensorflow-gpu
+#h5py
