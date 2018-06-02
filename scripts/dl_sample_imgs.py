@@ -1,70 +1,68 @@
 #! /usr/bin/env python
 
-from __future__ import print_function
+#from __future__ import print_function
+#from __future__ import absolute_import
 import os
 import errno
+import requests
+import zipfile
 
-#from definitions import ROOT_DIR
-ROOT_DIR = '/home/josh/r/golfr'
+#ROOT_DIR = '/home/josh/r/golfr'
 
-img_dir = os.path.join(ROOT_DIR, 'sample_imgs/')
-tmp_zip_pathname = os.path.join(img_dir,'tmp_imgs.zip')
+
 
 # http://stackoverflow.com/a/5032238
 def ensure_path_exists(path):
-
     try:
         os.makedirs(path)
     except OSError as exception:
         if exception.errno != errno.EEXIST:
             raise
 
-def dl_img_zip():
-    import requests
+def dl_img_zip(img_dir, tmp_zip_pathname):
 
-    print('Downloading sample images zip...')
+    print('Downloading sample images zip to "{}" ...'.format(img_dir))
 
-    img_album_url = 'http://imgur.com/a/SOIUE/zip'
+    # link expired :/ ... imgur has betrayed me
+    #IMG_ALBUM_URL = 'http://imgur.com/a/SOIUE/zip'
+    IMG_ALBUM_URL = 'https://drive.google.com/uc?export=download&id=0B01ArorP31gEbi1sSnE0aFZVYU0' 
     CHUNK_SIZE = 1024*1024
+    
+    
 
-    r = requests.head(img_album_url)
-    file_size = int(r.headers['content-length'])
+    #r = requests.head(IMG_ALBUM_URL)
+    #file_size = int(r.headers['content-length'])
 
-    r = requests.get(img_album_url, stream=True)
+    r = requests.get(IMG_ALBUM_URL, stream=True)
 
-    fmt_file_size = '{:.2f}'.format(file_size/CHUNK_SIZE)
+    #fmt_file_size = '{:.2f}'.format(file_size/CHUNK_SIZE)
 
     ensure_path_exists(img_dir)
 
     file_index = 0
     with open(tmp_zip_pathname, 'wb') as fd:
+        print('0.0 MB', end='\r')
         for chunk in r.iter_content(CHUNK_SIZE):
+            file_index += len(chunk)
             fmt_file_index = '{:.2f}'.format(file_index/CHUNK_SIZE)
-            print(fmt_file_index+'/'+fmt_file_size+' MB', end='\r')
+            print(fmt_file_index+' MB', end='\r')
             fd.write(chunk)
-            file_index += CHUNK_SIZE
-    print(fmt_file_size+'/'+fmt_file_size+' MB')
-
+    print()
     print('done')
 
-def extract_sample_imgs():
-    import zipfile
+def extract_sample_imgs(tmp_zip_pathname):
 
-    print('Extracting sample images... ', end='\r')
-
+    print('Extracting sample images ... ', end='\r')
+    
     with zipfile.ZipFile(tmp_zip_pathname, 'r') as zip_ref:
         zip_ref.extractall(img_dir)
 
-    print('Extracting sample images... done')
-
-def rm_tmp_zip():
-    print('Removing temporary zip file... ', end='\r')
-
-    os.remove(tmp_zip_pathname)
-
-    print('Removing temporary zip file... done')
+    print('Extracting sample images ... done')
 
 if __name__ == '__main__':
-    dl_img_zip()
-    extract_sample_imgs()
-    rm_tmp_zip()
+    img_dir = os.path.abspath('../sample_imgs/') #os.path.join(ROOT_DIR, 'sample_imgs/')
+    tmp_zip_pathname = os.path.join(img_dir,'sample_imgs.zip')
+    
+    dl_img_zip(img_dir, tmp_zip_pathname)
+    extract_sample_imgs(tmp_zip_pathname)
+    os.remove(tmp_zip_pathname)
