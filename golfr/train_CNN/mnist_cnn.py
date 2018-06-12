@@ -15,7 +15,7 @@ from keras.models import Sequential, save_model
 from keras.layers import Dense, Dropout, Flatten, Activation, Conv2D, MaxPooling2D
 from keras import backend as K
 
-def gen_digit_classifier(ofile='../models/digit_classifier_cnn.model')
+def gen_digit_classifier(ofile='../models/digit_classifier_cnn.model'):
     batch_size = 128
     num_classes = 10
     epochs = 12 #12

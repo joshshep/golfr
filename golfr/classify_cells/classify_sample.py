@@ -5,30 +5,31 @@ import keras
 from keras.utils import plot_model
 from keras.models import Sequential, load_model
 from keras.layers import Dense
+from os.path import abspath
 
-
-def classify_digit(digit_fname, model_fname='../digit_classifier_cnn.model')
+from golfr.definitions import DFLT_MODEL_PATH
+#def classify_digit(digit_fname, model_fname='models/digit_classifier_cnn.model'):
+def classify_digit(digit_fname, model_fname=DFLT_MODEL_PATH):
     #####################################
     ## load model
-
     model = load_model(model_fname)
 
 
-    plot_model(model, to_file='softmax_with.png', show_shapes=True)
+    #plot_model(model, to_file='softmax_with.png', show_shapes=True)
 
     # remove the last layer so we can see the non-binary results
     print len(model.layers)
     some_weights = model.layers[-1].get_weights()
-    print "some_weights[0] shape:",some_weights[0].shape
-    print "some_weights[1] shape:",some_weights[1].shape
     print some_weights
+    #print "some_weights[0] shape:",some_weights[0].shape
+    #print "some_weights[1] shape:",some_weights[1].shape
     #model.pop()
     #model.add(alayer)
     #model.add(Dense(num_classes, weights=some_weights, activation='softmax', name="dense_last"))
 
-    plot_model(model, to_file='softmax_without.png', show_shapes=True)
+    #plot_model(model, to_file='softmax_without.png', show_shapes=True)
 
-    print len(model.layers)
+    #print len(model.layers)
 
     model.outputs = [model.layers[-1].output]
     model.layers[-1].outbound_nodes = []
@@ -36,7 +37,7 @@ def classify_digit(digit_fname, model_fname='../digit_classifier_cnn.model')
 
     ############################################
     ## load sample image
-    img = cv2.imread('../test_imgs/number0_bad.jpg')
+    img = cv2.imread(digit_fname)
     print 'orig shape:',img.shape
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -62,9 +63,11 @@ def classify_digit(digit_fname, model_fname='../digit_classifier_cnn.model')
     ######################################
     ## resize sample image to (28,28)
     contoured = img.copy()
-    contours,hierarchy = cv2.findContours(contoured, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    #whose idea was it to make cv2.findContours non-backwards compatible?!
+    image, contours, _ = cv2.findContours(contoured, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnt = contours[0]
     x,y,w,h = cv2.boundingRect(cnt)
+    print 'x={}, y={}, w={}, h={}'.format(x,y,w,h)
     img = img[y:y+h,x:x+w]
     print 'cropped shape:',img.shape
 

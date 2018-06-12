@@ -99,3 +99,11 @@ ENV/
 
 # mkdocs documentation
 /site
+
+# images
+# is it legal to mix case-sensitivity in a single extension?
+*.jpg
+*.JPG
+*.JPEG
+*.png
+*.PNG
