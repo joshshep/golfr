@@ -7,6 +7,6 @@ setup(name='golfr',
       description='A golf scorecard parser',
       author='Josh Shepherd',
       author_email='joshashep@gmail.com',
-      url='https://github.com/joshshep',
+      url='https://github.com/joshshep/golfr',
       packages=['golfr'],
      )
