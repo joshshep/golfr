@@ -8,7 +8,7 @@ from keras.layers import Dense
 from os.path import abspath
 
 from golfr.definitions import DFLT_MODEL_PATH
-#def classify_digit(digit_fname, model_fname='models/digit_classifier_cnn.model'):
+
 def classify_digit(digit_fname, model_fname=DFLT_MODEL_PATH):
     #####################################
     ## load model
@@ -17,20 +17,9 @@ def classify_digit(digit_fname, model_fname=DFLT_MODEL_PATH):
 
     #plot_model(model, to_file='softmax_with.png', show_shapes=True)
 
-    # remove the last layer so we can see the non-binary results
-    print len(model.layers)
-    some_weights = model.layers[-1].get_weights()
-    print some_weights
-    #print "some_weights[0] shape:",some_weights[0].shape
-    #print "some_weights[1] shape:",some_weights[1].shape
-    #model.pop()
-    #model.add(alayer)
-    #model.add(Dense(num_classes, weights=some_weights, activation='softmax', name="dense_last"))
-
     #plot_model(model, to_file='softmax_without.png', show_shapes=True)
 
-    #print len(model.layers)
-
+    # remove the last layer so we can see the non-binary results
     model.outputs = [model.layers[-1].output]
     model.layers[-1].outbound_nodes = []
 
