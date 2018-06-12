@@ -2,6 +2,7 @@
 
 #from __future__ import print_function
 #from __future__ import absolute_import
+from __future__ import print_function
 import os
 import errno
 import requests
@@ -60,7 +61,7 @@ def extract_sample_imgs(tmp_zip_pathname):
     print('Extracting sample images ... done')
 
 if __name__ == '__main__':
-    img_dir = os.path.abspath('../sample_imgs/') #os.path.join(ROOT_DIR, 'sample_imgs/')
+    img_dir = os.path.abspath('../imgs/') #os.path.join(ROOT_DIR, 'sample_imgs/')
     tmp_zip_pathname = os.path.join(img_dir,'sample_imgs.zip')
     
     dl_img_zip(img_dir, tmp_zip_pathname)

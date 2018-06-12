@@ -8,7 +8,7 @@ from os.path import abspath, basename, join
 import sys, traceback
 
 def test_classify_cells():
-    sample_digits_path = '../sample_imgs/sample_digits'
+    sample_digits_path = '../imgs/sample_digits'
 
     fnames = [join(sample_digits_path, f) for f in listdir(sample_digits_path)]
     print (fnames)
