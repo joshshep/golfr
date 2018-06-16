@@ -3,8 +3,8 @@ opencv-python
 numpy
 keras
 tensorflow
+h5py
 #we will need/want these when we dynamically generate our CNN
 #tensorflow-gpu
-#h5py
 #pydot
 #graphviz
