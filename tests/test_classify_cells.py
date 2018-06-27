@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 from __future__ import print_function
-import golfr
 from golfr.classify_cells.classify_sample import classify_digit
 
 from os import listdir
