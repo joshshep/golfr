@@ -18,7 +18,7 @@
     python tests/test_classify_cells.py
     ```
 
-## Current pipeline ##
+## Current processing pipeline ##
 * find grid points
     * adaptive threshold
     * erode
@@ -31,7 +31,7 @@
 * sort grid points into square corners
 * prep resultant square for CNN
     * remove border (partial square)
-    * reduce noise (similar above)
+    * reduce noise (similar to above)
     * crop
     * downsample
 * run CNN on samples
