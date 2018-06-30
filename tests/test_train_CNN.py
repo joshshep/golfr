@@ -8,7 +8,7 @@ def test_train_CNN():
     try:
         gen_digit_classifier(epochs=50)
     except:
-        print('Exception: couldn\'t classify {}'.format(fname))
+        print('Exception: generate digit classifier')
         print ('-'*60)
         traceback.print_exc(file=sys.stdout)
         print ('-'*60)

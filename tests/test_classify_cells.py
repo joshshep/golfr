@@ -18,7 +18,7 @@ def test_classify_cells():
         try:
             #run the CNN on the sample image
             est_digit = classify_digit(fname)
-        except Exception as e:
+        except:
             print('Exception: couldn\'t classify {}'.format(fname))
             print ('-'*60)
             traceback.print_exc(file=sys.stdout)

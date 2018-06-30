@@ -1,18 +1,19 @@
 #! /usr/bin/env python
+from __future__ import print_function
 
 import sys
 import cv2
 import os
-from ...definitions import ROOT_DIR
+from golfr.definitions import DEBUG_OUTPUT_DIR
+from golfr.utils import ensure_path_exists
 
-DEBUG_OUTPUT_DIR = os.path.join(ROOT_DIR, 'debug/inter_imgs')
 #TEST_IMG_DIR = os.path.join(ROOT_DIR, 'pipe_output')
 
-def _imwrite(fname,nimg):
+def imwrite(fname,nimg):
     if not __debug__:
         return
 
-    #TODO: is there a better way to have a static variable?
+    #TODO: is there a better way to have the output named sequentially?
     try:
         imwrite.i += 1
     except AttributeError:
@@ -20,8 +21,8 @@ def _imwrite(fname,nimg):
             ensure_path_exists(DEBUG_OUTPUT_DIR)
         imwrite.i = 0
     complete_fname = os.path.join(DEBUG_OUTPUT_DIR, '_'+str(imwrite.i).zfill(2)+'_'+fname)
-    print 'writing \''+complete_fname+'\'...'
-    cv2.imwrite(complete_fname,img)
+    print('writing \''+complete_fname+'\'...')
+    cv2.imwrite(complete_fname,nimg)
 
 '''
 Parameter: in_fname: a string representing a path to an image
@@ -80,8 +81,9 @@ def find_grid_points(in_fname):
     close = cv2.morphologyEx(close,cv2.MORPH_DILATE,kernelx,iterations = 1)
     #cv2.imwrite("225_vertical_morph.jpg",close)
 
-    contour, hier = cv2.findContours(close,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
-    for cnt in contour:
+    #whose idea was it to make cv2.findContours non-backwards compatible?!
+    _, contours, _ = cv2.findContours(close,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+    for cnt in contours:
         x,y,w,h = cv2.boundingRect(cnt)
         if h/w > 10:
             cv2.drawContours(close,[cnt],0,255,-1)
@@ -103,8 +105,8 @@ def find_grid_points(in_fname):
     ret,close = cv2.threshold(dy,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
     close = cv2.morphologyEx(close,cv2.MORPH_DILATE,kernely,iterations=1)
 
-    contour, hier = cv2.findContours(close,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
-    for cnt in contour:
+    _, contours, _ = cv2.findContours(close,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+    for cnt in contours:
         x,y,w,h = cv2.boundingRect(cnt)
         if w/h > 10:
             cv2.drawContours(close,[cnt],0,255,-1)
@@ -131,10 +133,10 @@ def find_grid_points(in_fname):
 
     ############################################
     ## vectorize points
-    contour, hier = cv2.findContours(res,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
+    _, contours, _ = cv2.findContours(res,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
     centroids = []
     img_points = orig_img.copy()
-    for cnt in contour:
+    for cnt in contours:
         mom = cv2.moments(cnt)
         try:
             (x,y) = int(mom['m10']/mom['m00']), int(mom['m01']/mom['m00'])
