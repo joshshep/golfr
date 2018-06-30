@@ -9,16 +9,10 @@ import requests
 import zipfile
 
 #ROOT_DIR = '/home/josh/r/golfr'
+from golfr.utils import ensure_path_exists
 
 
 
-# http://stackoverflow.com/a/5032238
-def ensure_path_exists(path):
-    try:
-        os.makedirs(path)
-    except OSError as exception:
-        if exception.errno != errno.EEXIST:
-            raise
 
 def dl_img_zip(img_dir, tmp_zip_pathname):
 
