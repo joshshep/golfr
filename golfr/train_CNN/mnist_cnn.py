@@ -15,10 +15,12 @@ from keras.models import Sequential, save_model
 from keras.layers import Dense, Dropout, Flatten, Activation, Conv2D, MaxPooling2D
 from keras import backend as K
 
-def gen_digit_classifier(ofile='../models/digit_classifier_cnn.model'):
+from golfr.definitions import DFLT_MODEL_PATH
+
+
+def gen_digit_classifier(epochs=12, ofile=DFLT_MODEL_PATH):
     batch_size = 128
     num_classes = 10
-    epochs = 12 #12
 
     # input image dimensions
     img_rows, img_cols = 28, 28
@@ -52,6 +54,12 @@ def gen_digit_classifier(ofile='../models/digit_classifier_cnn.model'):
                      activation='relu',
                      input_shape=input_shape))
     model.add(Conv2D(64, (3, 3), activation='relu'))
+    
+    #experimental
+    model.add(Dropout(0.125))
+    model.add(Conv2D(64, (3, 3), activation='relu'))
+    # </experimental
+    
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Dropout(0.25))
     model.add(Flatten())
