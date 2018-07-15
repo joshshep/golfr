@@ -1,4 +1,4 @@
-# golfr (working title) #
+# golfr #
   golfr is a golf scorecard parser developed in Python.
 
   The end goal is to be able to upload an image and then extract the handwritten scores for each hole. Eventually, this could be encapsulated by a larger application for developing an online golf profile.
@@ -10,7 +10,7 @@
   * Install golfr
     ```bash
     cd golfr
-    sudo -H pip install -r requirements
+    pip install -r requirements.txt
     python setup.py develop
     ```
   * Run a test
