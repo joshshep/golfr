@@ -7,7 +7,13 @@ import os
 from golfr.definitions import DEBUG_OUTPUT_DIR
 from golfr.utils import ensure_path_exists
 
+import pandas as pd
+
 #TEST_IMG_DIR = os.path.join(ROOT_DIR, 'pipe_output')
+
+def saveCentroids(centroids, fname='centroids.csv'):
+    df = pd.DataFrame(centroids, columns=list('xy'))
+    df.to_csv(fname, index=False)
 
 def imwrite(fname,nimg):
     if not __debug__:
@@ -17,12 +23,11 @@ def imwrite(fname,nimg):
     try:
         imwrite.i += 1
     except AttributeError:
-        if __debug__:
-            ensure_path_exists(DEBUG_OUTPUT_DIR)
+        ensure_path_exists(DEBUG_OUTPUT_DIR)
         imwrite.i = 0
     complete_fname = os.path.join(DEBUG_OUTPUT_DIR, '_'+str(imwrite.i).zfill(2)+'_'+fname)
     print('writing \''+complete_fname+'\'...')
-    cv2.imwrite(complete_fname,nimg)
+    cv2.imwrite(complete_fname, nimg)
 
 '''
 Parameter: in_fname: a string representing a path to an image
@@ -85,10 +90,14 @@ def find_grid_points(in_fname):
     _, contours, _ = cv2.findContours(close,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
     for cnt in contours:
         x,y,w,h = cv2.boundingRect(cnt)
-        if h/w > 10:
+        if h/w > 15:
             cv2.drawContours(close,[cnt],0,255,-1)
         else:
             cv2.drawContours(close,[cnt],0,0,-1)
+            
+        #debug
+        #imwrite('vertical_lines_contours.jpg',close)
+        
     close = cv2.morphologyEx(close,cv2.MORPH_CLOSE,None,iterations = 2)
     closex = close.copy()
 
@@ -108,7 +117,7 @@ def find_grid_points(in_fname):
     _, contours, _ = cv2.findContours(close,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
     for cnt in contours:
         x,y,w,h = cv2.boundingRect(cnt)
-        if w/h > 10:
+        if w/h > 15:
             cv2.drawContours(close,[cnt],0,255,-1)
         else:
             cv2.drawContours(close,[cnt],0,0,-1)
@@ -119,7 +128,7 @@ def find_grid_points(in_fname):
     imwrite('hori_lines_blur.jpg',closey)
 
     #############################################
-    ## and hori and vert lines
+    ## bitwise AND hori and vert lines
     res = cv2.bitwise_and(closex,closey)
     imwrite('AND_lines.jpg',res)
 
@@ -146,5 +155,7 @@ def find_grid_points(in_fname):
             pass
 
     imwrite('grid_points.jpg',img_points)
-
+    
+    saveCentroids(centroids, fname='pnts_unfiltered.csv')
+    
     return centroids
