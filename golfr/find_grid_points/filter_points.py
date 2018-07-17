@@ -6,6 +6,8 @@ import numpy as np
 import struct
 import pandas as pd
 import random
+from os.path import join
+from golfr.definitions import ROOT_DIR
 '''
 
 Given a bunch of points, we want to be able to 
@@ -55,7 +57,10 @@ def get_distinct_colors():
         0xF13A13,    # Vivid Reddish Orange
         0x232C16     # Dark Olive Green
     ]'''
-    df = pd.read_csv('crayola120colors.txt', sep='\t', skiprows=[0],  index_col=False)
+    #TODO: how do I reference a (non-python) file that's in a submodule?
+    # I think it should stay in the package but specifying the directory explicitly
+    # probably isn't the solution
+    df = pd.read_csv(join(ROOT_DIR,'find_grid_points/crayola120colors.txt'), sep='\t', skiprows=[0],  index_col=False)
     
     #print(df.values[:, 1:4])
     return df.values[:, 1:4]
