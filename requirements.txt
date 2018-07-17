@@ -4,6 +4,7 @@ numpy
 keras
 tensorflow
 h5py
+pandas
 #we will need/want these when we dynamically generate our CNN
 #tensorflow-gpu
 #pydot
