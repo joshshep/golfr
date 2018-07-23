@@ -3,11 +3,11 @@ from __future__ import print_function
 from golfr.classify_cells.classify_sample import classify_digit
 
 from os import listdir
-from os.path import abspath, basename, join
+from os.path import abspath, basename, join, dirname
 import sys, traceback
 
 def test_classify_cells():
-    sample_digits_path = '../imgs/sample_digits'
+    sample_digits_path = abspath(join(dirname(__file__),'../imgs/sample_digits/'))
 
     fnames = [join(sample_digits_path, f) for f in listdir(sample_digits_path)]
     print (fnames)

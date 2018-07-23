@@ -3,9 +3,9 @@ from __future__ import print_function
 from golfr.find_grid_points.find_grid_points import find_grid_points
 import sys, traceback
 
-
+from os.path import abspath, join, dirname
 def test_find_grid_points():
-    fname = '../imgs/golfr_test_imgs/ex0.jpg'
+    fname = abspath(join(dirname(__file__),'../imgs/golfr_test_imgs/ex0.jpg'))
     try:
         find_grid_points(fname)
     except:
