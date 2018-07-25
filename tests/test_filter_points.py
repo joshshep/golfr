@@ -28,5 +28,6 @@ def test_filter_points():
         return
     print('test not necessarily failed')
     return True
+
 if __name__ == '__main__':
     test_filter_points()

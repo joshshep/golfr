@@ -10,7 +10,7 @@ from os.path import join
 from golfr.definitions import ROOT_DIR
 '''
 
-Given a bunch of points, we want to be able to 
+Given a bunch of points, we want to be able to
     - filter out extraneous points
     - fill in missed points
     - identify a logical grid by grouping sqaures of points e.g.
@@ -33,6 +33,11 @@ def arr_2_hexstr(arr):
     return '{:02X}{:02X}{:02X}'.format(arr[0], arr[1], arr[2])
 def num_2_hexstr(num):
     return arr_2_hexstr(num_2_hextup(num))
+'''
+
+These colors are really only used for pretty debug images
+
+'''
 def get_distinct_colors():
     '''distinct_colors = [
         0xFFB300,    # Vivid Yellow
@@ -89,7 +94,18 @@ def get_on_pixel_in_region(pnt, img, fill_radius=3):
             if np.any(img[y, x]): # NOT black
                 return x, y
     return
-def group_points(pnts, vertical_lines, horizontal_lines):
+
+'''
+This would've been dead simple in numpy
+'''
+def get_centroid(pnts, i):
+    tot = 0
+    for pnt in pnts:
+        tot += pnt[i]
+    return tot / len(pnts)
+
+
+def get_connected_pnts(pnts, floodable, DEBUG_FNAME='flooded'):
     #print('vertical_lines shape: {}'.format(vertical_lines.shape))
     
     # maxval, thresh
@@ -100,19 +116,19 @@ def group_points(pnts, vertical_lines, horizontal_lines):
     #print(distinct_colors_remain)
     
     #h, w, chs = floodx.shape
-    h, w = vertical_lines.shape[:2]
+    h, w = floodable.shape[:2]
     mask = np.zeros((h+2,w+2), np.uint8)
-    _, floody = cv2.threshold(vertical_lines, 127, 255, cv2.THRESH_BINARY)
+    _, flooded = cv2.threshold(floodable, 127, 255, cv2.THRESH_BINARY)
     i = 0
     lines = {}
     FILL_RADIUS = 7
     CIRCLE_RADIUS = 20
     for pnt in pnts:
-        flood_origin = get_on_pixel_in_region(pnt, floody, fill_radius=FILL_RADIUS)
+        flood_origin = get_on_pixel_in_region(pnt, flooded, fill_radius=FILL_RADIUS)
         if not flood_origin:
             raise Exception('couldn\'t find an ON pixel near the centroid (x,y)==({},{})'.format(pnt[0],pnt[1]))
         
-        pix_color = floody[flood_origin[1],flood_origin[0]]
+        pix_color = flooded[flood_origin[1],flood_origin[0]]
         #print ('color to fill: {}'.format(pix_color))
         
         #get string
@@ -121,10 +137,10 @@ def group_points(pnts, vertical_lines, horizontal_lines):
             lines[hexstr].append(pnt)
             #print('pix_color: {}'.format(clean_color))
             
+            # DEBUG: draw indicator circle
             # TODO: why do I need this list-comprehension?
-            # I got "pix_color" from the floody numpy ndarr
-            #DEBUG: draw indicator circle
-            cv2.circle(floody, tuple(pnt), CIRCLE_RADIUS, [int(x) for x in pix_color])
+            # I got "pix_color" from the flooded numpy ndarray
+            cv2.circle(flooded, tuple(pnt), CIRCLE_RADIUS, [int(x) for x in pix_color], thickness=3)
         else: #flood a new color
             if len(distinct_colors_remain) <= 0:
                 #raise Warning('not enough unique colors')
@@ -132,13 +148,13 @@ def group_points(pnts, vertical_lines, horizontal_lines):
                      len(lines)))
             
             col_tup = distinct_colors_remain.pop() #num_2_hextup(distinct_colors[len(lines)%len(distinct_colors)])
-            cv2.floodFill(floody, mask, flood_origin, col_tup)
+            cv2.floodFill(flooded, mask, flood_origin, col_tup)
             hexstr = arr_2_hexstr(col_tup)
             #add the color to the lines
             lines[hexstr] = [pnt]
             
-            #DEBUG: draw indicator circle
-            cv2.circle(floody, tuple(pnt), CIRCLE_RADIUS, col_tup)
+            # DEBUG: draw indicator circle
+            cv2.circle(flooded, tuple(pnt), CIRCLE_RADIUS, col_tup, thickness=3)
             
         
         i += 1
@@ -149,20 +165,43 @@ def group_points(pnts, vertical_lines, horizontal_lines):
             print('  x,y:  {:04d}, {:04d}'.format(pnt[0],pnt[1]))
     print('num lines: {}'.format(len(lines)))
     print('{} unique colors remaining ({:.2f}%)'.format(len(distinct_colors_remain),100.0*len(distinct_colors_remain)/distinct_colors.shape[0]))
-    cv2.imwrite('floody.jpg', floody)
-    #floody[np.array_equal(floody, np.ndarray([255,255,255]))] = np.ndarray([0,0,0])
-    #print (np.where( np.array_equal(floody, np.ndarray([255,255,255])) ))
+    cv2.imwrite(DEBUG_FNAME+'.jpg', flooded)
+    
+    return list(lines.values())
+    #flooded[np.array_equal(flooded, np.ndarray([255,255,255]))] = np.ndarray([0,0,0])
+    #print (np.where( np.array_equal(flooded, np.ndarray([255,255,255])) ))
     #https://stackoverflow.com/a/25823710
 
 
 
 
+from collections import Counter
 
 
+def group_points(pnts, vertical_lines, horizontal_lines):
+    vert_groups = get_connected_pnts(pnts, vertical_lines, DEBUG_FNAME='flooded_y')
+    hori_groups = get_connected_pnts(pnts, horizontal_lines, DEBUG_FNAME='flooded_x')
+    
+    # sort by group size in place
+    vert_groups.sort(key=lambda pnts: get_centroid(pnts,0))
+    hori_groups.sort(key=lambda pnts: get_centroid(pnts,1))
+    
+    # test
+    # TODO: actually do this
+    vert_groups[:] = [group for group in vert_groups if len(group)==7]
+    hori_groups[:] = [group for group in hori_groups if len(group)==24]
+    
+    print('vertical group sizes:')
+    #for num_occ, alen in Counter([len(x) for x in vert_groups]).items():
+    #    print('{}: {}'.format(num_occ, alen))
+    for group in vert_groups:
+        print(len(group))
+    print('horizontal group sizes:')
+    for group in hori_groups:
+        print(len(group))
 
-
-
-
+    for vert_group in vert_groups:
+        
 
 
 

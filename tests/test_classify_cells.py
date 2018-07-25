@@ -34,5 +34,6 @@ def test_classify_cells():
         print('test PASSED')
     print('{}/{} digits correctly classified'.format(num_correct, len(fnames)))
     return True
+
 if __name__ == '__main__':
     test_classify_cells()

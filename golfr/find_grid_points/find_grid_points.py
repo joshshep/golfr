@@ -31,7 +31,7 @@ def imwrite(fname,nimg):
 
 '''
 Parameter: in_fname: a string representing a path to an image
-returns: a list of tuples (x,y) representing the points of the grid corners
+returns: list of tuples (x,y) for the points of the found grid corners
 '''
 def find_grid_points(in_fname):
     import numpy as np
@@ -156,6 +156,6 @@ def find_grid_points(in_fname):
 
     imwrite('grid_points.jpg',img_points)
     
-    saveCentroids(centroids, fname='pnts_unfiltered.csv')
+    #saveCentroids(centroids, fname='pnts_unfiltered.csv')
     
     return centroids
